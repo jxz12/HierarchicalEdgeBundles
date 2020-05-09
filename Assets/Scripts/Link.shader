@@ -2,14 +2,21 @@
 {
     Properties
     {
-        _Color ("Background Color", Color) = (1,1,1,1)
+        _MinMaxBackground ("MinMax Background", Color) = (0,0,0,1)
+        _SceneBackground ("Scene Background", Color) = (1,1,1,1)
         _Alpha ("Link Alpha", Range(0,1)) = .3
     }
     Subshader
     {
-        // take min as per Holten (2006)
+        // initialise with black or white
         Pass
         {
+            Color [_MinMaxBackground]
+        }
+        // take Min or Max as per Holten (2006) depending on background
+        Pass
+        {
+            // BlendOp Max
             BlendOp Min
         }
 
@@ -19,10 +26,10 @@
         // wipe the screen
         Pass
         {
-            Color [_Color]
+            Color [_SceneBackground]
         }
 
-        // apply alpha mask
+        // apply alpha mask on top of grab pass
         Pass
         {
             Blend SrcAlpha OneMinusSrcAlpha

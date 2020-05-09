@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lr: {fileID: 2565080218142932600}
-  segmentsPerSpline: 5
+  segmentsPerSpline: 16
 --- !u!120 &2565080218142932600
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -90,7 +90,7 @@ LineRenderer:
   - {x: 0, y: 2, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.7
+    widthMultiplier: 0.0001
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -135,9 +135,9 @@ LineRenderer:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 0
-    numCapVertices: 5
-    alignment: 1
+    numCornerVertices: 1
+    numCapVertices: 0
+    alignment: 0
     textureMode: 0
     shadowBias: 0
     generateLightingData: 0

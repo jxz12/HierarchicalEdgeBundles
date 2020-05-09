@@ -5,7 +5,7 @@ public class Link : MonoBehaviour
 {
     [SerializeField] LineRenderer lr;
     List<Node> controlPoints;
-    public void Init(Node src, Node tgt, bool removeLCA=true)
+    public void FindControlPoints(Node src, Node tgt, bool removeLCA=true)
     {
         var path = new LinkedList<Node>();
         path.AddFirst(src);
@@ -35,6 +35,10 @@ public class Link : MonoBehaviour
         //         print($"{i} {controlPoints[i]}");
         //     }
         // }
+    }
+    public void SetWidth(float width)
+    {
+        lr.startWidth = lr.endWidth = width;
     }
     // public void Highlight(Color c)
     // {
