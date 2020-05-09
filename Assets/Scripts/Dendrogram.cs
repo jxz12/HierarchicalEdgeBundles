@@ -10,7 +10,7 @@ public class Dendrogram : MonoBehaviour
     [SerializeField] TextAsset graphTxt;
     [SerializeField] Link linkPrefab;
     [SerializeField] Node nodePrefab;
-    [SerializeField] Slider bundlingStrength, linkWidth;
+    [SerializeField] Slider bundlingStrength, linkWidth, minDependencies;
     [SerializeField] Toggle removeLCA;
 
     SparseVector<Node> nodes = new SparseVector<Node>();
@@ -19,7 +19,6 @@ public class Dendrogram : MonoBehaviour
     {
         var names = new Dictionary<int, string>();
         var adjacency = new Dictionary<int, List<int>>();
-        var nDependencies = new Dictionary<int, int>();
 
         // read text file
         var sr = new StringReader(graphTxt.text);
@@ -32,8 +31,6 @@ public class Dendrogram : MonoBehaviour
                 int idx = int.Parse(nodeTxt[0]);
                 names[idx] = nodeTxt[1];
                 adjacency[idx] = new List<int>();
-
-                nDependencies[idx] = 0;
             }
             else if (line.Contains(" "))
             {
@@ -41,17 +38,14 @@ public class Dendrogram : MonoBehaviour
                 int src = int.Parse(linkTxt[0]);
                 int tgt = int.Parse(linkTxt[1]);
                 adjacency[src].Add(tgt); // this means all ":" lines must come before all " " lines
-
-                nDependencies[src] += 1;
-                nDependencies[tgt] += 1;
             }
         }
         int rootIdx = -1; // all
         // int rootIdx = -2; // Editor
-        // int rootIdx = -1275; // External
-        // int rootIdx = -1525; // Modules
-        // int rootIdx = -2701; // Runtime
-        // int rootIdx = -3099; // Tools
+        // int rootIdx = -1260; // External
+        // int rootIdx = -1510; // Modules
+        // int rootIdx = -2686; // Runtime
+        // int rootIdx = -3082; // Tools
 
         int nLeaves = CountLeaves(rootIdx);
         print($"nLeaves = {nLeaves}");
@@ -93,8 +87,8 @@ public class Dendrogram : MonoBehaviour
             var children = new List<Node>();
 
             // foreach (int idx in adjacency[root])
-            // foreach (int idx in adjacency[root].OrderBy(x=>x))
-            foreach (int idx in adjacency[root].OrderBy(x=>adjacency[x].Count))
+            foreach (int idx in adjacency[root].OrderBy(x=>x))
+            // foreach (int idx in adjacency[root].OrderBy(x=>adjacency[x].Count))
             // foreach (int idx in adjacency[root].OrderBy(x=>UnityEngine.Random.Range(0,1f)))
             {
                 Node child = BuildTree(idx, depth+1);
@@ -129,28 +123,55 @@ public class Dendrogram : MonoBehaviour
             }
         }
 
+        // find number of dependencies asymmetric
+        int maxDependencies = 0;
+        foreach (int src in nodes.Indices)
+        {
+            foreach (int tgt in nodes.Indices)
+            {
+                if (adjacency[src].Contains(tgt))
+                {
+                    nodes[src].NDependencies += 1;
+                    nodes[tgt].NDependencies += 1;
+                    maxDependencies = Math.Max(maxDependencies, nodes[src].NDependencies);
+                    maxDependencies = Math.Max(maxDependencies, nodes[tgt].NDependencies);
+                }
+            }
+        }
+        minDependencies.minValue = 1;
+        minDependencies.maxValue = maxDependencies;
+        minDependencies.wholeNumbers = true;
+
         // join nodes with bundled links
-        int minDependencies = 50;
         foreach (int src in adjacency.Keys)
         {
             foreach (int tgt in adjacency[src])
             {
-                if (src>=0 && tgt>=0 && nodes[src]!=null && nodes[tgt]!=null &&
-                    (nDependencies[src]>=minDependencies || nDependencies[tgt]>=minDependencies))
+                if (src>=0 && tgt>=0 && nodes[src]!=null && nodes[tgt]!=null)
                 {
-                    var link = Instantiate(linkPrefab, nodes[src].transform);
-                    link.name = $"{names[src]} -> {names[tgt]}";
+                    var link = Instantiate(linkPrefab, nodes[tgt].transform);
+                    link.name = $"{names[tgt]} -> {names[src]}";
                     links[src,tgt] = link;
 
                     link.FindControlPoints(nodes[src], nodes[tgt], removeLCA.isOn);
                     link.SetWidth(linkWidth.value);
                     link.Draw(bundlingStrength.normalizedValue);
+                    link.Show(nodes[src].NDependencies>=minDependencies.value || nodes[tgt].NDependencies>=minDependencies.value);
                 }
             }
         }
         removeLCA.onValueChanged.AddListener(ToggleLCA);
         bundlingStrength.onValueChanged.AddListener(Rebundle);
         linkWidth.onValueChanged.AddListener(ResizeLinks);
+        minDependencies.onValueChanged.AddListener(RemoveLowDependencyLinks);
+    }
+    void RemoveLowDependencyLinks(float foo)
+    {
+        foreach (var ij in links.IndexPairs)
+        {
+            int src = ij.Item1, tgt = ij.Item2;
+            links[ij].Show(nodes[src].NDependencies>=minDependencies.value || nodes[tgt].NDependencies>=minDependencies.value);
+        }
     }
     void ResizeLinks(float foo)
     {

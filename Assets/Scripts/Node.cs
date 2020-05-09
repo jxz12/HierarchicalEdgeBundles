@@ -17,4 +17,5 @@ public class Node : MonoBehaviour
         set { parent = value; transform.SetParent(parent.transform, true); }
     }
     public List<Node> Children { get; set; } = null;
+    public int NDependencies { get; set; }
 }

@@ -4,6 +4,23 @@ using System.Collections.Generic;
 public class Link : MonoBehaviour
 {
     [SerializeField] LineRenderer lr;
+    [SerializeField] Color startCol, endCol;
+    void Awake()
+    {
+        var grad = new Gradient();
+        var startLab = LABColor.FromColor(startCol);
+        var endLab = LABColor.FromColor(endCol);
+        var colorKeys = new GradientColorKey[8];
+        for (int i=0; i<8; i++)
+        {
+            float t = i/8f;
+            var midLab = LABColor.Lerp(startLab, endLab, t);
+            colorKeys[i] = new GradientColorKey(LABColor.ToColor(midLab), t);
+        }
+        var alphaKeys = new GradientAlphaKey[]{ new GradientAlphaKey(1,1), new GradientAlphaKey(1,1) };
+        grad.SetKeys(colorKeys, alphaKeys);
+        lr.colorGradient = grad;
+    }
     List<Node> controlPoints;
     public void FindControlPoints(Node src, Node tgt, bool removeLCA=true)
     {
@@ -39,6 +56,10 @@ public class Link : MonoBehaviour
     public void SetWidth(float width)
     {
         lr.startWidth = lr.endWidth = width;
+    }
+    public void Show(bool showing)
+    {
+        lr.enabled = showing;
     }
     // public void Highlight(Color c)
     // {
