@@ -5,7 +5,7 @@ public class Link : MonoBehaviour
 {
     [SerializeField] LineRenderer lr;
     List<Node> controlPoints;
-    public void Init(Node src, Node tgt)
+    public void Init(Node src, Node tgt, bool removeLCA=true)
     {
         var path = new LinkedList<Node>();
         path.AddFirst(src);
@@ -26,7 +26,7 @@ public class Link : MonoBehaviour
             }
         }
         path.Remove(headSrc); // headSrc equals headTgt here so remove duplicate
-        if (path.Count > 3) {
+        if (removeLCA && path.Count > 3) {
             path.Remove(headTgt); // remove lowest common ancestor as per Holten (2006)
         }
         controlPoints = new List<Node>(path);

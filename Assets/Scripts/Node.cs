@@ -11,6 +11,10 @@ public class Node : MonoBehaviour
         get { return transform.position; }
         set { transform.position = value; }
     }
-    public Node Parent { get; set; } = null;
+    Node parent;
+    public Node Parent {
+        get { return parent; }
+        set { parent = value; transform.SetParent(parent.transform, true); }
+    }
     public List<Node> Children { get; set; } = null;
 }
