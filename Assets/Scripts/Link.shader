@@ -16,8 +16,8 @@
         // take Min or Max as per Holten (2006) depending on background
         Pass
         {
-            // BlendOp Max
-            BlendOp Min
+            BlendOp Max
+            // BlendOp Min
         }
 
         // grab the colors to use later
