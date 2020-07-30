@@ -11,14 +11,14 @@ public class Link : MonoBehaviour
         var alphaKeys = new GradientAlphaKey[]{ new GradientAlphaKey(1,1), new GradientAlphaKey(1,1) };
 
         var viridis = new GradientColorKey[]{
-            new GradientColorKey(new Color(0.267004f, 0.004874f, 0.329415f), 1),
+            new GradientColorKey(new Color(0.267004f, 0.004874f, 0.329415f), 7/7f),
             new GradientColorKey(new Color(0.275191f, 0.194905f, 0.496005f), 6/7f),
             new GradientColorKey(new Color(0.212395f, 0.359683f, 0.551710f), 5/7f),
             new GradientColorKey(new Color(0.153364f, 0.497000f, 0.557724f), 4/7f),
             new GradientColorKey(new Color(0.122312f, 0.633153f, 0.530398f), 3/7f),
             new GradientColorKey(new Color(0.288921f, 0.758394f, 0.428426f), 2/7f),
             new GradientColorKey(new Color(0.626579f, 0.854645f, 0.223353f), 1/7f),
-            new GradientColorKey(new Color(0.993248f, 0.906157f, 0.143936f), 0),
+            new GradientColorKey(new Color(0.993248f, 0.906157f, 0.143936f), 0/7f),
         };
         grad.SetKeys(viridis, alphaKeys);
 
